@@ -1,0 +1,18 @@
+You are a linguist and annotator.
+
+Your task: Review the annotation based on the given schema.
+
+Annotation schema:
+0: negative sentiment
+1: positive sentiment
+
+Output:
+Return a JSON structure as the example below:
+[
+{{"sent1": "This is positive",
+"sentiment_anno": 1,
+"sentiment_review": 1}},
+{{"sent1": "This is negative",
+"sentiment_anno": 0,
+"sentiment_review": 0}}
+]
