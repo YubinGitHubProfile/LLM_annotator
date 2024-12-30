@@ -60,17 +60,16 @@ csv_parser = CSVparser(csv_file=input_csv, batch_size=batch_size, llm_agents=ann
 csv_parser.annotate_csv(output_file=output_csv)
 ```
 ## Explanation:
-Import Modules: Import the necessary modules for prompts, annotation, and CSV handling.
-Set Up Paths and API Key: Define the paths to your input CSV, output CSV, and prompt files. Also, provide your Gemini API key.
-Load Prompts: Load the raw prompt text from the specified files.
-Create Prompt Objects: Create Prompt objects for each prompt in your annotation chain.
-Build PromptChain: Create a PromptChain object and add your Prompt objects to it in the desired order.
-Initialize Annotator: Create an Annotator object, providing the PromptChain, API key, and the desired Gemini model.
-Initialize CSVparser: Create a CSVparser object, specifying the input CSV file, batch size for processing, and the Annotator object.
-Annotate CSV: Call the annotate_csv method of the CSVparser to process the input CSV file and save the annotated output to the specified output file.
+* Import Modules: Import the necessary modules for prompts, annotation, and CSV handling.
+* Set Up Paths and API Key: Define the paths to your input CSV, output CSV, and prompt files. Also, provide your Gemini API key.
+* Load Prompts: Load the raw prompt text from the specified files.
+* Create Prompt Objects: Create Prompt objects for each prompt in your annotation chain.
+* Build PromptChain: Create a PromptChain object and add your Prompt objects to it in the desired order.
+* Initialize Annotator: Create an Annotator object, providing the PromptChain, API key, and the desired Gemini model.
+* Initialize CSVparser: Create a CSVparser object, specifying the input CSV file, batch size for processing, and the Annotator object.
+* Annotate CSV: Call the annotate_csv method of the CSVparser to process the input CSV file and save the annotated output to the specified output file.
 
 ## Key Considerations:
-Prompt Design: Carefully design your prompts to guide the LLM towards the desired annotations. Use clear instructions and examples.
-Batch Size: Adjust the batch_size parameter in CSVparser based on the complexity of your prompts and the capabilities of your system.
-Error Handling: Implement error handling to gracefully manage potential issues during API calls or file processing.
-Customization: The tool can be easily adapted to different annotation tasks by modifying the prompts and the PromptChain.
+* Prompt Design: Carefully design your prompts to guide the LLM towards the desired annotations. Use clear instructions and examples.
+* Batch Size: Adjust the batch_size parameter in CSVparser based on the complexity of your prompts and the capabilities of your system.
+* Customization: The tool can be easily adapted to different annotation tasks by modifying the prompts and the PromptChain.
