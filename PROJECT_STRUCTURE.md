@@ -24,6 +24,10 @@ This is a complete sophisticated document annotation system for socio-pragmatic 
 │   ├── __init__.py
 │   └── advanced_templates.py  # Expert-level prompt engineering
 │
+├── generators/                 # Synthetic data generation
+│   ├── __init__.py
+│   └── synthetic_data.py      # AI-powered text generation
+│
 ├── nlp/                       # spaCy-based linguistic analysis
 │   ├── __init__.py
 │   └── spacy_analyzer.py      # Advanced linguistic feature extraction
@@ -45,6 +49,7 @@ This is a complete sophisticated document annotation system for socio-pragmatic 
 - **LangChain Integration**: Professional prompt management and model orchestration
 - **Multiple Gemini Models**: 2.5-Flash (default), 2.0-Flash, 2.5-Pro support
 - **Advanced spaCy Analysis**: Sophisticated linguistic feature detection
+- **Synthetic Data Generation**: AI-powered text creation for dataset building
 - **Socio-Pragmatic Focus**: Beyond simple annotation to nuanced analysis
 - **Academic Discourse**: Specialized tools for scholarly text analysis
 - **Flexible Processing**: Multiple input formats and batch processing

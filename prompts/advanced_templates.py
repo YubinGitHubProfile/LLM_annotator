@@ -320,6 +320,69 @@ Analyze for:
 
 Provide detailed analysis of how citations construct academic authority and knowledge claims."""
 
+    DISCOURSE_MARKERS_PROMPT = """Analyze discourse markers and organizational signals in the following text to understand textual coherence and information flow.
+
+Text to analyze:
+{text}
+
+Analyze for:
+
+1. **Logical Connectors**:
+   - Causal relationships (therefore, because, as a result)
+   - Contrastive markers (however, nevertheless, on the other hand)
+   - Additive connectors (furthermore, moreover, in addition)
+   - Temporal markers (subsequently, meanwhile, finally)
+
+2. **Organizational Signals**:
+   - Topic introducers (regarding, concerning, with respect to)
+   - Sequencing markers (first, second, next, lastly)
+   - Exemplification (for instance, for example, namely)
+   - Summarizing markers (in conclusion, to summarize, overall)
+
+3. **Metadiscourse Elements**:
+   - Text references (as mentioned above, the following section)
+   - Reader engagement (note that, consider, observe)
+   - Transition signals between sections or ideas
+
+4. **Coherence Patterns**:
+   - Topic progression and maintenance
+   - Information packaging and emphasis
+   - Logical flow and argument structure
+
+Provide detailed JSON analysis of discourse organization and textual coherence."""
+
+    EVALUATIVE_LANGUAGE_PROMPT = """Analyze evaluative language and attitudinal positioning in the following text to understand how the author expresses judgments and values.
+
+Text to analyze:
+{text}
+
+Analyze for:
+
+1. **Appraisal Categories**:
+   - Affect: emotional responses and feelings
+   - Judgment: evaluations of behavior and character
+   - Appreciation: evaluations of objects, phenomena, and texts
+
+2. **Evaluative Devices**:
+   - Adjectives and adverbs (significant, remarkably, unfortunately)
+   - Evaluative verbs (demonstrate, fail, succeed)
+   - Evaluative nouns (breakthrough, problem, achievement)
+   - Comparative and superlative forms
+
+3. **Stance Indicators**:
+   - Positive vs. negative evaluation
+   - Intensity and force of evaluation
+   - Source of evaluation (attributed vs. authorial)
+   - Certainty and commitment levels
+
+4. **Attitudinal Positioning**:
+   - Value judgments and preferences
+   - Normative statements and expectations
+   - Emotional engagement with content
+   - Ideological positioning and worldview
+
+Provide detailed JSON analysis of evaluative patterns and attitudinal stance."""
+
     @classmethod
     def get_prompt_template(cls, prompt_type: PromptType) -> ChatPromptTemplate:
         """Get a specific prompt template by type."""
@@ -331,6 +394,9 @@ Provide detailed analysis of how citations construct academic authority and know
             PromptType.RAPPORT_BUILDING: cls.RAPPORT_BUILDING_PROMPT,
             PromptType.HEDGING_BOOSTING: cls.HEDGING_BOOSTING_PROMPT,
             PromptType.POLITENESS_STRATEGIES: cls.POLITENESS_STRATEGIES_PROMPT,
+            PromptType.DISCOURSE_MARKERS: cls.DISCOURSE_MARKERS_PROMPT,
+            PromptType.EVALUATIVE_LANGUAGE: cls.EVALUATIVE_LANGUAGE_PROMPT,
+            PromptType.CITATION_ANALYSIS: cls.CITATION_ANALYSIS_PROMPT,
         }
         
         if prompt_type not in human_templates:

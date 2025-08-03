@@ -66,6 +66,20 @@ class AdvancedDataLoader:
             "average_batch_time": 0.0,
         }
     
+    def _detect_file_format(self, filename: str) -> str:
+        """Detect file format based on extension."""
+        path = Path(filename)
+        extension = path.suffix.lower()
+        
+        if extension == '.csv':
+            return 'csv'
+        elif extension == '.json':
+            return 'json'
+        elif extension in ['.txt', '.text']:
+            return 'txt'
+        else:
+            return 'unknown'
+    
     def load_from_csv(
         self, 
         file_path: Union[str, Path], 

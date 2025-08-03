@@ -282,3 +282,8 @@ lightning_logs/
 # Downloaded pre-trained models
 pretrained_models/
 transformers_cache/
+
+# Development and documentation files (internal use only)
+PROJECT_STRUCTURE.md
+DEVELOPMENT_GUIDE.md
+QUICK_REFERENCE.md

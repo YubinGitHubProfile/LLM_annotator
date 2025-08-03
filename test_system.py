@@ -34,7 +34,7 @@ def test_imports():
         print("✅ Prompt templates imported successfully")
         
         # Test NLP imports
-        from nlp.spacy_analyzer import SpacyAnalyzer
+        from nlp.spacy_analyzer import AdvancedNLPAnalyzer
         print("✅ spaCy analyzer imported successfully")
         
         return True
@@ -90,10 +90,10 @@ def test_annotation_pipeline():
         test_text = "We argue that this approach might represent a significant advancement."
         
         # Test NLP analysis (works without API)
-        from nlp.spacy_analyzer import SpacyAnalyzer
-        nlp_analyzer = SpacyAnalyzer(config.spacy_config)
-        nlp_features = nlp_analyzer.analyze_text(test_text)
-        print(f"✅ NLP analysis completed: {len(nlp_features)} features detected")
+        from nlp.spacy_analyzer import AdvancedNLPAnalyzer
+        nlp_analyzer = AdvancedNLPAnalyzer(config.spacy_config)
+        nlp_analysis = nlp_analyzer.analyze_text(test_text)
+        print(f"✅ NLP analysis completed: {len(nlp_analysis.features)} features detected")
         
         return True
         
@@ -115,9 +115,9 @@ def test_generation_setup():
         
         # Test generation parameters
         params = generator._create_generation_parameters(
-            genre=TextGenreType.ACADEMIC,
+            genre=TextGenreType.ACADEMIC_PAPER,
             topic="test topic",
-            complexity=LinguisticComplexity.INTERMEDIATE
+            complexity=LinguisticComplexity.MODERATE
         )
         print(f"✅ Generation parameters created: {params.genre.value}")
         

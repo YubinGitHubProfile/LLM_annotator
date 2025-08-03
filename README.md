@@ -333,12 +333,16 @@ If you use this tool in your research, please cite:
 ```bibtex
 @software{advanced_annotation_tool,
   title={Advanced Document Annotation Tool for Socio-Pragmatic Analysis},
-  author={Your Name},
-  year={2024},
+  author={Yubin Xing},
+  year={2025},
   url={https://github.com/YubinGitHubProfile/LLM_annotator}
 }
 ```
 
-## 📄 License
+## � Acknowledgments
+
+This project was developed with assistance from Claude Sonnet 4 (Anthropic) for code architecture, debugging, and documentation. The core research concepts and domain expertise are original contributions by the author.
+
+## �📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

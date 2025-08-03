@@ -272,8 +272,8 @@ class AdvancedNLPAnalyzer:
                 features.append(LinguisticFeature(
                     feature_type="nominalization",
                     text=nom.text,
-                    start_char=nom.start_char,
-                    end_char=nom.end_char,
+                    start_char=nom.idx,
+                    end_char=nom.idx + len(nom.text),
                     token_start=nom.i,
                     token_end=nom.i + 1,
                     properties={"grammatical": True, "pos": nom.pos_}

@@ -122,6 +122,29 @@ class SyntheticDataGenerator:
             top_k=model_config.top_k,
         )
     
+    def _create_generation_parameters(
+        self,
+        genre: TextGenreType,
+        topic: Optional[str] = None,
+        complexity: LinguisticComplexity = LinguisticComplexity.MODERATE,
+        target_features: Optional[List[str]] = None,
+        word_count_range: tuple = (100, 300)
+    ) -> GenerationParameters:
+        """Create generation parameters for synthetic text generation."""
+        return GenerationParameters(
+            genre=genre,
+            complexity=complexity,
+            target_features=target_features or [],
+            word_count_range=word_count_range,
+            topic_area=topic,
+            stance_type="neutral",
+            politeness_level="formal",
+            target_readability=None,
+            include_citations=False,
+            author_persona="researcher",
+            audience_level="academic"
+        )
+    
     def generate_text(
         self,
         parameters: GenerationParameters,
