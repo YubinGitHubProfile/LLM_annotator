@@ -8,6 +8,10 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import json
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class GeminiModel(Enum):
@@ -34,7 +38,7 @@ class ModelConfig:
     """Configuration for Gemini model parameters."""
     model: GeminiModel = GeminiModel.GEMINI_2_5_FLASH
     temperature: float = 0.1
-    max_output_tokens: int = 8000
+    max_output_tokens: int = 16000  # Increased from 8000 to handle longer responses
     top_p: float = 0.95
     top_k: int = 40
     candidate_count: int = 1
@@ -66,7 +70,6 @@ class AnnotationConfig:
     ])
 
 
-@dataclass
 @dataclass
 class Config:
     """Main configuration class."""

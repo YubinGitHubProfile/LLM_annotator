@@ -238,7 +238,7 @@ class AdvancedAnnotator:
                 
                 # Track token usage if available
                 with get_openai_callback() as cb:
-                    response = self._get_llm()(messages)
+                    response = self._get_llm().invoke(messages)
                     if hasattr(cb, 'total_tokens'):
                         self.stats["total_tokens_used"] += cb.total_tokens
                     if hasattr(cb, 'total_cost'):
@@ -255,7 +255,7 @@ class AdvancedAnnotator:
                     raise e
     
     def _parse_llm_response(self, response_text: str) -> Dict[str, Any]:
-        """Parse LLM response, handling various JSON formats."""
+        """Parse LLM response, handling various JSON formats and truncations."""
         # Clean up the response text
         cleaned_text = response_text.strip()
         
@@ -273,7 +273,23 @@ class AdvancedAnnotator:
             return json.loads(cleaned_text)
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse JSON response: {str(e)}")
-            logger.warning(f"Raw response: {response_text[:500]}...")
+            logger.warning(f"Raw response: {response_text[:1000]}...")
+            
+            # Try to fix common truncation issues
+            try:
+                # Add missing closing braces if it looks like truncation
+                if cleaned_text.count('{') > cleaned_text.count('}'):
+                    missing_braces = cleaned_text.count('{') - cleaned_text.count('}')
+                    cleaned_text += '}' * missing_braces
+                
+                # Add missing closing quotes if truncated mid-string
+                if cleaned_text.count('"') % 2 != 0:
+                    cleaned_text += '"'
+                
+                # Try again
+                return json.loads(cleaned_text)
+            except json.JSONDecodeError:
+                pass
             
             # Attempt to extract JSON from the response
             import re
@@ -286,7 +302,7 @@ class AdvancedAnnotator:
             
             # Return the raw text if JSON parsing fails
             return {
-                "raw_response": response_text,
+                "raw_response": response_text[:2000] + "..." if len(response_text) > 2000 else response_text,
                 "parsing_error": str(e),
                 "parsed_successfully": False
             }

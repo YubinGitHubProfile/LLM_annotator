@@ -189,7 +189,7 @@ class SyntheticDataGenerator:
                 generation_time=generation_time,
                 metadata={
                     "word_count": len(generated_text.split()),
-                    "sentence_count": len(analysis.discourse_structure.get("sentence_count", 0)),
+                    "sentence_count": analysis.discourse_structure.get("sentence_count", 0),
                     "model_used": self.config.model_config.model.value,
                 }
             )
