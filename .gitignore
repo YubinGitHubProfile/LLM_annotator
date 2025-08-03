@@ -287,3 +287,4 @@ transformers_cache/
 PROJECT_STRUCTURE.md
 DEVELOPMENT_GUIDE.md
 QUICK_REFERENCE.md
+test_system.py
