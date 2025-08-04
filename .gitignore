@@ -293,3 +293,7 @@ config/sample_config.json
 .env
 .env.local
 .env.production
+.env.example
+
+# Production data folder (contains input/output CSV files, analysis results)
+production/

@@ -10,11 +10,12 @@ from spacy.matcher import Matcher, PhraseMatcher
 from spacy.util import filter_spans
 import re
 import textstat
-from typing import Dict, List, Tuple, Optional, Any, Set
+from typing import Dict, List, Tuple, Optional, Any, Set, Union
 import numpy as np
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
+from rapidfuzz import fuzz
 
 from config.settings import SpacyConfig
 
@@ -435,3 +436,205 @@ class AdvancedNLPAnalyzer:
         stats["readability"] = analysis_result.readability_scores
         
         return stats
+    
+    def classify_by_keywords(self, text: str, keywords: List[Union[str, Tuple[Union[str, Tuple[str, str]], ...]]], 
+                           feature_name: str = "keyword_match", 
+                           fuzzy_threshold: float = 0.8,
+                           enable_fuzzy: bool = True) -> Dict[str, Any]:
+        """
+        Advanced binary classification with fuzzy matching and tuple-based AND logic.
+        
+        Args:
+            text: Input text to classify
+            keywords: List of keywords/tuples. Can contain:
+                     - Simple strings: "important"
+                     - Tuples for AND logic: ("research", "shows")
+                     - Tuples with POS tags: (("research", "NOUN"), ("shows", "VERB"))
+                     - Mixed: ["simple", ("complex", "tuple"), (("word", "NOUN"), "another")]
+            feature_name: Name for the feature being detected
+            fuzzy_threshold: Similarity threshold for fuzzy matching (0.0-1.0)
+            enable_fuzzy: Whether to enable fuzzy matching for words >=5 chars
+            
+        Returns:
+            Dictionary with text, label (1/0), matched items, and details
+        """
+        # Process text with spaCy
+        doc = self.nlp(text)
+        
+        matched_items = []
+        match_details = []
+        
+        for keyword_item in keywords:
+            if isinstance(keyword_item, str):
+                # Simple string matching
+                match_result = self._match_simple_keyword(doc, keyword_item, fuzzy_threshold, enable_fuzzy)
+                if match_result:
+                    matched_items.append(keyword_item)
+                    match_details.append({
+                        "type": "simple",
+                        "keyword": keyword_item,
+                        "matches": match_result
+                    })
+                    
+            elif isinstance(keyword_item, tuple):
+                # Tuple matching (AND logic)
+                match_result = self._match_tuple_keyword(doc, keyword_item, fuzzy_threshold, enable_fuzzy)
+                if match_result:
+                    matched_items.append(keyword_item)
+                    match_details.append({
+                        "type": "tuple",
+                        "keyword": keyword_item,
+                        "matches": match_result
+                    })
+        
+        # Binary classification: 1 if any keyword/tuple matched, 0 otherwise
+        label = 1 if matched_items else 0
+        
+        return {
+            "text": text,
+            "label": label,
+            "feature_name": feature_name,
+            "matched_items": matched_items,
+            "match_details": match_details,
+            "total_matches": len(matched_items),
+            "fuzzy_enabled": enable_fuzzy,
+            "fuzzy_threshold": fuzzy_threshold
+        }
+    
+    def _match_simple_keyword(self, doc: Doc, keyword: str, fuzzy_threshold: float, enable_fuzzy: bool) -> List[Dict[str, Any]]:
+        """Match a simple string keyword with optional fuzzy matching."""
+        matches = []
+        keyword_lower = keyword.lower()
+        
+        # Check for exact matches first
+        for token in doc:
+            if token.text.lower() == keyword_lower:
+                matches.append({
+                    "text": token.text,
+                    "match_type": "exact",
+                    "similarity": 1.0,
+                    "start": token.idx,
+                    "end": token.idx + len(token.text)
+                })
+        
+        # Fuzzy matching for words >= 5 characters
+        if enable_fuzzy and len(keyword) >= 5 and not matches:
+            for token in doc:
+                if len(token.text) >= 5:
+                    # Use rapidfuzz for better fuzzy matching (returns 0-100, normalize to 0-1)
+                    similarity = fuzz.ratio(token.text.lower(), keyword_lower) / 100.0
+                    if similarity >= fuzzy_threshold:
+                        matches.append({
+                            "text": token.text,
+                            "match_type": "fuzzy",
+                            "similarity": similarity,
+                            "start": token.idx,
+                            "end": token.idx + len(token.text)
+                        })
+        
+        # Also check for multi-word phrases
+        if ' ' in keyword:
+            text_lower = doc.text.lower()
+            if keyword_lower in text_lower:
+                start_pos = text_lower.find(keyword_lower)
+                matches.append({
+                    "text": keyword,
+                    "match_type": "phrase",
+                    "similarity": 1.0,
+                    "start": start_pos,
+                    "end": start_pos + len(keyword)
+                })
+        
+        return matches
+    
+    def _match_tuple_keyword(self, doc: Doc, keyword_tuple: Tuple, fuzzy_threshold: float, enable_fuzzy: bool) -> List[Dict[str, Any]]:
+        """Match a tuple of keywords/POS combinations using AND logic."""
+        all_element_matches = []
+        
+        # Process each element in the tuple
+        for element in keyword_tuple:
+            element_matches = []
+            
+            if isinstance(element, str):
+                # Simple string element
+                element_matches = self._match_simple_keyword(doc, element, fuzzy_threshold, enable_fuzzy)
+                
+            elif isinstance(element, tuple) and len(element) == 2:
+                # (word, POS) tuple
+                word, pos_tag = element
+                word_lower = word.lower()
+                
+                # Find tokens that match both word and POS
+                for token in doc:
+                    word_match = False
+                    
+                    # Check exact match
+                    if token.text.lower() == word_lower:
+                        word_match = True
+                        similarity = 1.0
+                        match_type = "exact"
+                    
+                    # Check fuzzy match for words >= 5 chars
+                    elif enable_fuzzy and len(word) >= 5 and len(token.text) >= 5:
+                        # Use rapidfuzz for better fuzzy matching (returns 0-100, normalize to 0-1)
+                        similarity = fuzz.ratio(token.text.lower(), word_lower) / 100.0
+                        if similarity >= fuzzy_threshold:
+                            word_match = True
+                            match_type = "fuzzy"
+                    
+                    # Check POS tag match
+                    pos_match = (token.pos_ == pos_tag or token.tag_ == pos_tag)
+                    
+                    if word_match and pos_match:
+                        element_matches.append({
+                            "text": token.text,
+                            "pos": token.pos_,
+                            "tag": token.tag_,
+                            "match_type": match_type,
+                            "similarity": similarity,
+                            "start": token.idx,
+                            "end": token.idx + len(token.text),
+                            "required_pos": pos_tag
+                        })
+            
+            all_element_matches.append(element_matches)
+        
+        # Check if ALL elements in the tuple have matches (AND logic)
+        if all(matches for matches in all_element_matches):
+            # Combine all matches for this tuple
+            combined_matches = []
+            for i, element_matches in enumerate(all_element_matches):
+                combined_matches.extend([{
+                    **match,
+                    "element_index": i,
+                    "element": keyword_tuple[i]
+                } for match in element_matches])
+            
+            return combined_matches
+        
+        return []  # Not all elements matched
+    
+    def batch_classify_by_keywords(self, texts: List[str], 
+                                 keywords: List[Union[str, Tuple[Union[str, Tuple[str, str]], ...]]], 
+                                 feature_name: str = "keyword_match",
+                                 fuzzy_threshold: float = 0.8,
+                                 enable_fuzzy: bool = True) -> List[Dict[str, Any]]:
+        """
+        Classify multiple texts using advanced keyword matching.
+        
+        Args:
+            texts: List of texts to classify
+            keywords: List of keywords/tuples (same format as classify_by_keywords)
+            feature_name: Name for the feature being detected
+            fuzzy_threshold: Similarity threshold for fuzzy matching
+            enable_fuzzy: Whether to enable fuzzy matching
+            
+        Returns:
+            List of classification results
+        """
+        results = []
+        for text in texts:
+            result = self.classify_by_keywords(text, keywords, feature_name, fuzzy_threshold, enable_fuzzy)
+            results.append(result)
+        
+        return results

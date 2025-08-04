@@ -232,6 +232,49 @@ academic_chain = PromptChain([
 annotator = AdvancedAnnotator(config, prompt_chain=academic_chain)
 ```
 
+### 🎨 Customizing Prompt Templates
+
+**Advanced users can modify the prompt templates in `prompts/advanced_templates.py` to adapt the system for their specific research needs:**
+
+```python
+# Example: Add your own annotation type
+class PromptType(Enum):
+    # ... existing types ...
+    EMOTION_ANALYSIS = "emotion_analysis"  # Your custom type
+
+# Example: Modify existing templates
+SOCIO_PRAGMATIC_PROMPT = """
+Analyze the following text for socio-pragmatic features, focusing on:
+- [Your specific research focus]
+- [Additional linguistic phenomena you're studying]
+- [Domain-specific patterns relevant to your work]
+
+Text: {text}
+"""
+
+# Example: Create domain-specific templates
+MEDICAL_DISCOURSE_PROMPT = """
+Analyze medical communication patterns including:
+- Doctor-patient interaction styles
+- Medical authority construction
+- Empathy and rapport in healthcare settings
+...
+"""
+```
+
+**Key customization areas:**
+- **Prompt Templates**: Modify analysis instructions for your domain
+- **Annotation Types**: Add new linguistic phenomena to study
+- **Output Schemas**: Adapt result structures for your research needs
+- **System Messages**: Adjust the AI's expertise focus for your field
+
+**Common research adaptations:**
+- **Legal Language**: Contract analysis, policy discourse, legal argumentation
+- **Medical Communication**: Patient interactions, clinical documentation
+- **Educational Texts**: Pedagogical strategies, student-teacher dynamics
+- **Social Media**: Informal register, community building, viral patterns
+- **Historical Texts**: Diachronic language change, period-specific features
+
 ## 📊 Annotation Types
 
 ### 1. Socio-Pragmatic Analysis
@@ -321,10 +364,19 @@ This tool is designed for researchers studying:
 ## 🤝 Contributing
 
 We welcome contributions! Please see our contribution guidelines for:
-- Adding new annotation types
-- Expanding prompt templates
-- Improving NLP analysis
-- Adding support for new languages/models
+- **Adding new annotation types**: Extend `PromptType` enum and create corresponding templates
+- **Expanding prompt templates**: Modify `advanced_templates.py` for new domains or linguistic phenomena
+- **Improving NLP analysis**: Enhance spaCy integration and feature extraction
+- **Adding support for new languages/models**: Expand multilingual capabilities
+
+### 🔧 Template Development Guidelines
+
+When customizing `advanced_templates.py`:
+1. **Follow the existing schema structure** for consistency
+2. **Test prompts thoroughly** with diverse text samples
+3. **Document your changes** with clear examples
+4. **Consider cross-domain applicability** when possible
+5. **Validate output quality** with domain experts
 
 ## 📝 Citation
 
