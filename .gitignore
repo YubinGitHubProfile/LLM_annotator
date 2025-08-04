@@ -48,6 +48,18 @@ coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
+
+# Production Configuration Files (DO NOT COMMIT)
+production/local_config.json
+production/local_config_*.json
+production/*_config.json
+production/user_settings.json
+
+# Personal config files (DO NOT COMMIT)
+config/*_config.json
+config/local_*.json
+config/personal_*.json
+config/user_*.json
 .pytest_cache/
 cover/
 
